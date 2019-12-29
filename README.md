@@ -12,9 +12,10 @@ separate browser window for use in any environment.
 ![Altair Viewer Gif](https://raw.githubusercontent.com/altair-viz/altair_viewer/master/images/viewer.gif)
 
 ## Installation
-The development version of Altair-viewer can be installed with pip:
+Altair Viewer can be installed from the
+[Python Package Index](http://pypi.org/project/altair_viewer) with ``pip``:
 ```
-$ pip install git+http://github.com/altair-viz/altair_viewer.git
+$ pip install altair_viewer
 ```
 
 ## Usage: General Environments
