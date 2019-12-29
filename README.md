@@ -1,5 +1,5 @@
 # Altair Viewer
-Offline chart viewer for Altair visualizations
+Offline chart viewer for [Altair](http://altair-viz.github.io) visualizations
 
 [![github actions](https://github.com/altair-viz/altair_viewer/workflows/build/badge.svg)](https://github.com/altair-viz/altair_viewer/actions?query=workflow%3Abuild)
 [![github actions](https://github.com/altair-viz/altair_viewer/workflows/lint/badge.svg)](https://github.com/altair-viz/altair_viewer/actions?query=workflow%3Alint)
@@ -28,12 +28,12 @@ and ``altair_viewer.show()``. Their use is slightly different:
   The background server will be terminated when the main Python process terminates, so this
   is not suitable for standalone scripts.
 
-- ``altair_viewer.show(chart)`` is meant for use once at the end of a script. It does the same
-   as ``display()``, but automatically opens a browser window, and adds an input
+- ``altair_viewer.show(chart)`` is meant for use once at the end of a Python script. It does the
+  same as ``display()``, but automatically opens a browser window, and adds an input
   prompt to prevent the script (and the server it creates) from terminating.
 
 ## Usage: IPython & Jupyter
-Within Jupyter notebook, IPython notebook, and related environments that support
+Within Jupyter notebook, IPython terminal, and related environments that support
 [Mimetype-based display](https://jupyterlab.readthedocs.io/en/stable/user/file_formats.html),
 altair viewer can be used by enabling the ``altair_viewer`` renderer:
 ```python
