@@ -23,7 +23,7 @@ Altair viewer provides two top-level functions for displaying charts: ``display(
 Their intended use is slightly different:
 ```python
 import altair_viewer
-altair_veiwer.display(chart)
+altair_viewer.display(chart)
 ```
 ``display(chart)`` is meant for use in interactive computing environments where
 a single Python process is used interactively. It will serve a chart viewer at a localhost
@@ -33,7 +33,7 @@ is not suitable for standalone scripts.
 
 ```python
 import altair_viewer
-altair_veiwer.show(chart)
+altair_viewer.show(chart)
 ```
 ``show(chart)`` is meant for use once at the end of a Python script. It does the
 same as ``display()``, but automatically opens a browser window, and adds an input
