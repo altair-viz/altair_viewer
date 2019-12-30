@@ -1,5 +1,7 @@
 # Altair Viewer Change Log
 
+## Version 0.2.0 (unreleased)
+
 ## Version 0.1.1
 
 Bug: fix URLs for inline mode for Jupyter Notebook and other requirejs-based renderers (#18).
