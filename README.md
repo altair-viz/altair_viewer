@@ -19,18 +19,25 @@ $ pip install altair_viewer
 ```
 
 ## Usage: General Environments
-Altair viewer provides two top-level functions for displaying charts: ``altair_viewer.display()``
-and ``altair_viewer.show()``. Their use is slightly different:
+Altair viewer provides two top-level functions for displaying charts: ``display()`` and ``show()``.
+Their intended use is slightly different:
+```python
+import altair_viewer
+altair_veiwer.display(chart)
+```
+``display(chart)`` is meant for use in interactive computing environments where
+a single Python process is used interactively. It will serve a chart viewer at a localhost
+URL, and any susequent chart created within the session will appear in the same window.
+The background server will be terminated when the main Python process terminates, so this
+is not suitable for standalone scripts.
 
-- ``altair_viewer.display(chart)`` is meant for use in interactive computing environments where
-  a single Python process is used interactively. It will serve a chart viewer at a localhost
-  URL, and any susequent chart created within the session will appear in the same window.
-  The background server will be terminated when the main Python process terminates, so this
-  is not suitable for standalone scripts.
-
-- ``altair_viewer.show(chart)`` is meant for use once at the end of a Python script. It does the
-  same as ``display()``, but automatically opens a browser window, and adds an input
-  prompt to prevent the script (and the server it creates) from terminating.
+```python
+import altair_viewer
+altair_veiwer.show(chart)
+```
+``show(chart)`` is meant for use once at the end of a Python script. It does the
+same as ``display()``, but automatically opens a browser window, and adds an input
+prompt to prevent the script (and the server it creates) from terminating.
 
 ## Usage: IPython & Jupyter
 Within Jupyter notebook, IPython terminal, and related environments that support
@@ -48,14 +55,15 @@ If enabled with ``inline=True``, charts will be rendered inline in the notebook:
 import altair as alt
 alt.renderers.enable('altair_viewer', inline=True)
 ```
-To display a single chart using Altair viewer in an IPython environment without globally
-enabling the associated renderer, you can use the ``display`` method:
+
+To display a single inline chart using Altair viewer in an IPython environment without
+globally enabling the associated renderer, you can use the ``display`` method directly:
 ```python
 import altair_viewer
 altair_viewer.display(chart, inline=True)
 ```
 
 Note that the display based on altair viewer will only function correctly as long as the
-Kernel that created the charts is active, as it depends on the background server started
+kernel that created the charts is running, as it depends on the background server started
 by the kernel. In particular, this means that if you save a notebook and reopen it later,
 charts will not display until the associated cells are re-run.
