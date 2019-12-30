@@ -1,6 +1,5 @@
 import json
 import pkgutil
-import re
 from typing import Dict, Optional, Union
 import uuid
 import webbrowser
@@ -66,12 +65,12 @@ HTML = """
 </html>
 """
 
-INLINE_HTML = """
+INLINE_HTML = r"""
 <div id="{output_div}"></div>
 <script type="text/javascript">
   (function(spec, embedOpt) {{
     const outputDiv = document.getElementById("{output_div}");
-    const paths = {{
+    const urls = {{
       "vega": "{vega_url}",
       "vega-lite": "{vegalite_url}",
       "vega-embed": "{vegaembed_url}",
@@ -79,10 +78,10 @@ INLINE_HTML = """
     function loadScript(lib) {{
       return new Promise(function(resolve, reject) {{
         var s = document.createElement('script');
-        s.src = paths[lib];
+        s.src = urls[lib];
         s.async = true;
-        s.onload = () => resolve(paths[lib]);
-        s.onerror = () => reject(`Error loading script: ${{paths[lib]}}`);
+        s.onload = () => resolve(urls[lib]);
+        s.onerror = () => reject(`Error loading script: ${{urls[lib]}}`);
         document.getElementsByTagName("head")[0].appendChild(s);
       }});
     }}
@@ -96,6 +95,11 @@ INLINE_HTML = """
     }}
 
     if(typeof define === "function" && define.amd) {{
+        // requirejs paths need '.js' extension stripped.
+        const paths = Object.keys(urls).reduce(function(paths, package) {{
+            paths[package] = urls[package].replace(/\.js$/, "");
+            return paths
+        }}, {{}})
         requirejs.config({{paths}});
         require(["vega-embed"], displayChart, err => showError(`Error loading script: ${{err.message}}`));
     }} else if (typeof vegaEmbed === "function") {{
@@ -144,7 +148,6 @@ class ChartViewer:
 
     def _initialize(self) -> None:
         """Initialize the viewer."""
-        # TODO: allow optionally serving resources from CDN
         if self._provider is None:
             self._provider = EventProvider()
             if self._use_bundled_js:
@@ -192,15 +195,11 @@ class ChartViewer:
             chart = chart.to_dict()
         assert isinstance(chart, dict)
 
-        # requirejs paths should not include .js extension.
-        def strip_ext(url: str) -> str:
-            return re.sub(r"\.js$", "", url)
-
         return INLINE_HTML.format(
             output_div=f"altair-chart-{uuid.uuid4().hex}",
-            vega_url=strip_ext(self._package_url("vega")),
-            vegalite_url=strip_ext(self._package_url("vega-lite")),
-            vegaembed_url=strip_ext(self._package_url("vega-embed")),
+            vega_url=self._package_url("vega"),
+            vegalite_url=self._package_url("vega-lite"),
+            vegaembed_url=self._package_url("vega-embed"),
             spec=json.dumps(chart),
             embedOpt=json.dumps(embed_opt or {}),
         )
