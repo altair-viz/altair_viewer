@@ -1,5 +1,6 @@
 import json
 import pkgutil
+import re
 from typing import Dict, Optional, Union
 import uuid
 import webbrowser
@@ -190,11 +191,16 @@ class ChartViewer:
         if isinstance(chart, alt.TopLevelMixin):
             chart = chart.to_dict()
         assert isinstance(chart, dict)
+
+        # requirejs paths should not include .js extension.
+        def strip_ext(url: str) -> str:
+            return re.sub(r"\.js$", "", url)
+
         return INLINE_HTML.format(
             output_div=f"altair-chart-{uuid.uuid4().hex}",
-            vega_url=self._package_url("vega"),
-            vegalite_url=self._package_url("vega-lite"),
-            vegaembed_url=self._package_url("vega-embed"),
+            vega_url=strip_ext(self._package_url("vega")),
+            vegalite_url=strip_ext(self._package_url("vega-lite")),
+            vegaembed_url=strip_ext(self._package_url("vega-embed")),
             spec=json.dumps(chart),
             embedOpt=json.dumps(embed_opt or {}),
         )
