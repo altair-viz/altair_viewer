@@ -4,6 +4,7 @@ import threading
 import time
 import tornado.gen
 import tornado.web
+import tornado.websocket
 from typing import MutableMapping, TypeVar
 
 
@@ -24,6 +25,26 @@ class DataSource:
     @property
     def url(self) -> str:
         return f"{self._provider.url}/{self._provider._stream_path}/{self.stream_id}"
+
+
+class ConnectionMonitor(tornado.websocket.WebSocketHandler):
+    """Web socket connection to monitor connections."""
+
+    _connections: set
+    _disconnect_event: threading.Event
+
+    def initialize(self, connections: set, disconnect_event: threading.Event) -> None:
+        self._connections = connections
+        self._disconnect_event = disconnect_event
+
+    def open(self):
+        self._connections.add(self)
+        self._disconnect_event.clear()
+
+    def on_close(self):
+        self._connections.remove(self)
+        if not self._connections:
+            self._disconnect_event.set()
 
 
 class EventStreamHandler(tornado.web.RequestHandler):
@@ -71,12 +92,18 @@ class EventProvider(Provider):
 
     _data_sources: MutableMapping[str, DataSource]
     _stream_path: str
+    _websocket_path: str
     _stop_event: threading.Event
+    _connections: set
+    _disconnect_event: threading.Event
 
-    def __init__(self, stream_path: str = "stream"):
+    def __init__(self, stream_path: str = "stream", websocket_path: str = "websocket"):
         self._data_sources = {}
         self._stream_path = stream_path
+        self._websocket_path = websocket_path
         self._stop_event = threading.Event()
+        self._connections = set()
+        self._disconnect_event = threading.Event()
         super().__init__()
 
     def stop(self: T) -> T:
@@ -91,7 +118,15 @@ class EventProvider(Provider):
                 f"/{self._stream_path}/.*",
                 EventStreamHandler,
                 dict(data_sources=self._data_sources, stop_event=self._stop_event),
-            )
+            ),
+            (
+                f"/{self._websocket_path}",
+                ConnectionMonitor,
+                dict(
+                    connections=self._connections,
+                    disconnect_event=self._disconnect_event,
+                ),
+            ),
         ] + handlers
 
     def create_stream(self, stream_id: str) -> DataSource:
