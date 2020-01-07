@@ -1,4 +1,5 @@
 import re
+import threading
 from typing import Any, Dict, Iterable, List, Tuple
 import webbrowser
 
@@ -8,7 +9,6 @@ import pytest
 from tornado.httpclient import HTTPClient
 
 from altair_viewer import ChartViewer
-import altair_viewer._viewer
 
 
 CDN_URL = "https://cdn.jsdelivr.net/npm/"
@@ -36,7 +36,7 @@ def chart() -> alt.Chart:
     return alt.Chart("data.csv").mark_point().encode(x="x:Q")
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def viewers() -> Iterable[Dict[bool, ChartViewer]]:
     viewers = {
         use_bundled_js: ChartViewer(use_bundled_js=use_bundled_js)
@@ -169,9 +169,6 @@ def test_show(
     viewer = viewers[use_bundled_js]
     assert viewer._use_bundled_js == use_bundled_js
 
-    input_mock = Mock("Q")
-    monkeypatch.setattr(altair_viewer._viewer, "input", input_mock, raising=False)
-
     browser_open = Mock()
     monkeypatch.setattr(webbrowser, "open", browser_open)
 
@@ -182,14 +179,23 @@ def test_show(
     assert viewer._stream is not None
     monkeypatch.setattr(viewer._stream, "send", stream_send)
 
+    viewer_thread = threading.Thread(
+        target=viewer.show, args=(chart,), kwargs={"open_browser": open_browser}
+    )
+    viewer_thread.start()
+    assert viewer._provider is not None
+
     html = http_client.fetch(viewer.url).body.decode()
     if use_bundled_js:
         assert CDN_URL not in html
     else:
         assert CDN_URL in html
 
-    viewer.show(chart, open_browser=open_browser)
+    # Thread should stay alive until disconnect event.
+    assert viewer_thread.is_alive()
+    viewer._provider._disconnect_event.set()
+    viewer_thread.join()
+    assert not viewer_thread.is_alive()
+
     assert len(browser_open.calls) == (1 if open_browser else 0)
     assert len(ipython_display.calls) == 0
-    assert len(stream_send.calls) == 1
-    assert len(input_mock.calls) == 1

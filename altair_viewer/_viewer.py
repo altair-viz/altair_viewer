@@ -30,6 +30,7 @@ HTML = """
   <body>
     <div id="{output_div}" class="altair-chart"></div>
     <script type="text/javascript">
+        var ws = new WebSocket("{websocket_url}");
         function showSpec(spec, embedOpt) {{
             const el = document.getElementById("{output_div}");
             vegaEmbed(el, spec, embedOpt)
@@ -116,6 +117,24 @@ INLINE_HTML = r"""
 """
 
 
+class DisplayedChart:
+    """Show information about displayed charts."""
+
+    url: str
+
+    def __init__(self, url: str):
+        self.url = url
+
+    def __repr__(self) -> str:
+        return f"Displaying chart at {self.url}"
+
+    def _repr_mimebundle_(self, include=None, exclude=None) -> Dict[str, str]:
+        return {
+            "text/plain": repr(self),
+            "text/html": f"Displaying chart at <a href='{self.url}' target='_blank'>{self.url}</a>",
+        }
+
+
 class ChartViewer:
     _provider: Optional[Provider]
     _resources: Dict[str, Resource]
@@ -139,6 +158,12 @@ class ChartViewer:
             "vega-lite": vegalite_version,
             "vega-embed": vegaembed_version,
         }
+
+    def _websocket_url(self) -> str:
+        if self._provider is None:
+            raise RuntimeError("_websocket_url() called before initialization.")
+        base_url = self._provider.url.split("//", 1)[1]
+        return f"ws://{base_url}/websocket"
 
     def _package_url(self, package: str) -> str:
         if self._use_bundled_js:
@@ -170,6 +195,7 @@ class ChartViewer:
                     vega_url=self._package_url("vega"),
                     vegalite_url=self._package_url("vega-lite"),
                     vegaembed_url=self._package_url("vega-embed"),
+                    websocket_url=self._websocket_url(),
                 ),
                 route="",
             )
@@ -209,8 +235,8 @@ class ChartViewer:
         chart: Union[dict, alt.TopLevelMixin],
         inline: bool = False,
         embed_opt: Optional[dict] = None,
-        open_browser: bool = True,
-    ) -> None:
+        open_browser: Optional[bool] = None,
+    ) -> Optional[DisplayedChart]:
         """Display an Altair, Vega-Lite, or Vega chart.
 
         Parameters
@@ -223,8 +249,9 @@ class ChartViewer:
         embed_opt : dict (optional)
             The Vega embed options that control the dispay of the chart.
         open_browser : bool (optional)
-            If True, then attempt to automatically open a web browser window
-            pointing to the displayed chart.
+            Specify whether a browser window should be opened when inline=False.
+            If not specified, a browser window will be opened only if the server is
+            not already connected to a browser.
 
         See Also
         --------
@@ -241,17 +268,23 @@ class ChartViewer:
             from IPython import display
 
             display.display(display.HTML(self._inline_html(chart, embed_opt)))
-        else:
-            self._stream.send(json.dumps({"spec": chart, "embedOpt": embed_opt or {}}))
-        if open_browser and not inline:
+            return None
+
+        self._stream.send(json.dumps({"spec": chart, "embedOpt": embed_opt or {}}))
+        if self._provider is None:
+            raise RuntimeError("Internal: provider is None")
+
+        if open_browser or (open_browser is None and not self._provider._connections):
+            self._provider._disconnect_event.clear()
             webbrowser.open(self.url)
+        return DisplayedChart(self.url)
 
     def render(
         self,
         chart: Union[dict, alt.TopLevelMixin],
         inline: bool = False,
         embed_opt: Optional[dict] = None,
-        open_browser: bool = False,
+        open_browser: Optional[bool] = None,
     ) -> Dict[str, str]:
         """Jupyter renderer for Altair/Vega charts.
 
@@ -267,8 +300,9 @@ class ChartViewer:
         embed_opt : dict (optional)
             The Vega embed options that control the dispay of the chart.
         open_browser : bool (optional)
-            If True, then attempt to automatically open a web browser window
-            pointing to the displayed chart.
+            Specify whether a browser window should be opened when inline=False.
+            If not specified, a browser window will be opened only if the server is
+            not already connected to a browser.
 
         Returns
         -------
@@ -284,19 +318,16 @@ class ChartViewer:
             self._initialize()
             return {"text/html": self._inline_html(chart, embed_opt)}
         else:
-            self.display(
+            out = self.display(
                 chart, embed_opt=embed_opt, open_browser=open_browser, inline=inline
             )
-            return {
-                "text/plain": f"Displaying chart at {self.url}",
-                "text/html": f"Displaying chart at <a href='{self.url}' target='_blank'>{self.url}</a>",
-            }
+            return out._repr_mimebundle_() if out is not None else {}
 
     def show(
         self,
         chart: Union[dict, alt.TopLevelMixin],
         embed_opt: Optional[dict] = None,
-        open_browser: bool = True,
+        open_browser: Optional[bool] = None,
     ) -> None:
         """Show chart and prompt to pause execution.
 
@@ -310,16 +341,16 @@ class ChartViewer:
         embed_opt : dict (optional)
             The Vega embed options that control the dispay of the chart.
         open_browser : bool (optional)
-            If True, then attempt to automatically open a web browser window
-            pointing to the displayed chart.
+            Specify whether a browser window should be opened. If not specified,
+            a browser window will be opened only if the server is not already
+            connected to a browser.
 
         See Also
         --------
         display : Display a chart without pausing execution.
         render : Jupyter renderer for chart.
         """
-        self.display(chart, embed_opt=embed_opt, open_browser=open_browser)
-        print(f" Displaying chart at {self.url}")
-        selection = ""
-        while selection.upper() != "Q":
-            selection = input("  (Q to quit) >")
+        msg = self.display(chart, embed_opt=embed_opt, open_browser=open_browser)
+        print(msg)
+        if self._provider is not None:
+            self._provider._disconnect_event.wait()
