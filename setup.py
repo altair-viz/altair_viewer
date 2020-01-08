@@ -57,7 +57,7 @@ def find_packages(top=HERE):
 setup(
     name="altair_viewer",
     version=version("altair_viewer/__init__.py"),
-    description="A background data server for Altair charts.",
+    description="Viewer for Altair and Vega-Lite visualizations.",
     long_description=read("README.md"),
     long_description_content_type="text/markdown",
     author="Jake VanderPlas",
