@@ -1,6 +1,11 @@
 # Altair Viewer Change Log
 
-## Version 0.2.0 (unreleased)
+## Version 0.2.0
+
+- Update bundled Vega to v5.9.1 (#23)
+- Add websocket connection monitor to avoid opening multiple windows and to terminate
+  processes more cleanly (#22)
+- Fix project metadata (#18, #19)
 
 ## Version 0.1.2
 
