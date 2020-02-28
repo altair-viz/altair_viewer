@@ -1,6 +1,5 @@
 import json
 import os
-import shutil
 from urllib.request import urlretrieve
 
 PACKAGES = {"vega": ["5.9.1"], "vega-lite": ["4.0.2"], "vega-embed": ["6.2.1"]}
