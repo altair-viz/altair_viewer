@@ -39,6 +39,7 @@ def version(path):
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+
 # From https://github.com/jupyterlab/jupyterlab/blob/master/setupbase.py, BSD licensed
 def find_packages(top=HERE):
     """
@@ -70,7 +71,7 @@ setup(
     install_requires=get_install_requirements("requirements.txt"),
     python_requires=">=3.6",
     entry_points={
-        "altair.vegalite.v4.renderer": ["altair_viewer=altair_viewer:render",],
+        "altair.vegalite.v4.renderer": ["altair_viewer=altair_viewer:render"],
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",

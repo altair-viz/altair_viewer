@@ -7,7 +7,7 @@ install:
 
 test:
 	python -m black .
-	python -m flake8 $(PACKAGE)
+	python -m flake8 . --statistics
 	python -m mypy $(PACKAGE)
 	rm -rf build
 	python setup.py build &&\
