@@ -1,0 +1,5 @@
+black
+ipython
+flake8
+mypy
+pytest
