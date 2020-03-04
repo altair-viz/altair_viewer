@@ -2,6 +2,11 @@
 
 ## Version 0.3.0 (unreleased)
 
+## Version 0.2.1
+
+- Update bundled Vega to v5.9.2
+- Update bundled Vega-embed to v6.2.2
+
 ## Version 0.2.0
 
 - Update bundled Vega to v5.9.1 (#23)
