@@ -2,7 +2,7 @@ import json
 import os
 from urllib.request import urlretrieve
 
-PACKAGES = {"vega": ["5.9.1"], "vega-lite": ["4.0.2"], "vega-embed": ["6.2.1"]}
+PACKAGES = {"vega": ["5.9.2"], "vega-lite": ["4.0.2"], "vega-embed": ["6.2.2"]}
 
 OUTDIR = os.path.join(os.path.dirname(__file__), "..", "altair_viewer", "scripts")
 
