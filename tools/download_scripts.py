@@ -4,7 +4,7 @@ from urllib.request import urlretrieve
 
 PACKAGES = {
     "vega": ["5.9.2", "5.10.0"],
-    "vega-lite": ["4.0.2", "4.5.1"],
+    "vega-lite": ["4.0.2", "4.6.0"],
     "vega-embed": ["6.2.2"],
 }
 
