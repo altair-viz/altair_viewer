@@ -161,7 +161,9 @@ class ChartViewer:
 
     def _websocket_url(self) -> str:
         if self._provider is None:
-            raise RuntimeError("_websocket_url() called before initialization.")
+            raise RuntimeError(
+                "Internal: _websocket_url() called before initialization."
+            )
         base_url = self._provider.url.split("//", 1)[1]
         return f"ws://{base_url}/websocket"
 

@@ -15,7 +15,19 @@ class ParsedVersion(NamedTuple):
 
 
 class Version:
-    """Parser for version strings."""
+    """Parser for version strings.
+
+    Examples
+    --------
+    >>> Version('3.2.0')
+    Version('3.2.0')
+    >>> Version(3, 2, 0)
+    Version('3.2.0')
+    >>> Version('2.9') < Version('2.10')
+    True
+    >>> Version(4).matches('4.2')
+    True
+    """
 
     major: int
     minor: Optional[int]
@@ -40,46 +52,12 @@ class Version:
         self.micro = micro
         self.dev = dev
 
-    def __str__(self) -> str:
-        version = str(self.major)
-        if self.minor is not None:
-            version += f".{self.minor}"
-        if self.micro is not None:
-            version += f".{self.micro}"
-        if self.dev is not None:
-            version += self.dev
-        return version
-
-    def _parse(self, version: str) -> ParsedVersion:
-        """Parse a string version"""
-        regex = re.compile(
-            r"^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<micro>\d+))?)?(?P<dev>.+)?$"
-        )
-        match = regex.match(version)
-        if not match:
-            raise ValueError(f"Cannot parse version: {version!r}")
-        dct = match.groupdict()
-        return ParsedVersion(
-            major=int(dct["major"]),
-            minor=None if dct.get("minor") is None else int(dct["minor"]),
-            micro=None if dct.get("micro") is None else int(dct["micro"]),
-            dev=dct.get("dev"),
-        )
-
     def matches(self, other: Union[str, "Version"]) -> bool:
         """Check one-way matching between versions.
 
         This checks if self is a less-specific match of other, where "less specific"
         means that the minor or micro versions are left unspecified. (See examples below).
         Note that under this definition, matching is not symmetric.
-
-        Parameters
-        ----------
-        other : str or Version
-
-        Returns
-        -------
-        equivalent : bool
 
         Examples
         --------
@@ -103,7 +81,24 @@ class Version:
                 return False
         return True
 
+    def _parse(self, version: str) -> ParsedVersion:
+        """Parse a string version."""
+        regex = re.compile(
+            r"^(?P<major>\d+)(?:\.(?P<minor>\d+)(?:\.(?P<micro>\d+))?)?(?P<dev>.+)?$"
+        )
+        match = regex.match(version)
+        if not match:
+            raise ValueError(f"Cannot parse version: {version!r}")
+        dct = match.groupdict()
+        return ParsedVersion(
+            major=int(dct["major"]),
+            minor=None if dct.get("minor") is None else int(dct["minor"]),
+            micro=None if dct.get("micro") is None else int(dct["micro"]),
+            dev=dct.get("dev"),
+        )
+
     def _order_tuple(self) -> Tuple[float, float, float, Tuple[float, ...]]:
+        """Tuple key for ordering comparisons."""
         return (
             self.major,
             -1 if self.minor is None else self.minor,
@@ -151,6 +146,16 @@ class Version:
 
     def __repr__(self) -> str:
         return f"Version({str(self)!r})"
+
+    def __str__(self) -> str:
+        version = str(self.major)
+        if self.minor is not None:
+            version += f".{self.minor}"
+        if self.micro is not None:
+            version += f".{self.micro}"
+        if self.dev is not None:
+            version += self.dev
+        return version
 
 
 def find_version(
