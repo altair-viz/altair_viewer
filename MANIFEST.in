@@ -1,8 +1,11 @@
-include README.md
-include Makefile
-include LICENSE
 include CHANGES.md
+include LICENSE
+include Makefile
+include mypy.ini
 include pyproject.toml
-include requirements.txt
+include README.md
 include requirements-dev.txt
+include requirements.txt
+include setup.cfg
+include setup.py
 recursive-include altair_viewer *.py *.json *.js *.ico
