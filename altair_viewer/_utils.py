@@ -1,6 +1,6 @@
 import math
 import re
-from typing import NamedTuple, List, Optional, Union
+from typing import Any, NamedTuple, List, Optional, Tuple, Union
 
 
 class NoMatchingVersions(RuntimeError):
@@ -57,7 +57,7 @@ class Version:
         )
         match = regex.match(version)
         if not match:
-            raise ValueError(f"Cannot parse version: {version}")
+            raise ValueError(f"Cannot parse version: {version!r}")
         dct = match.groupdict()
         return ParsedVersion(
             major=int(dct["major"]),
@@ -103,38 +103,54 @@ class Version:
                 return False
         return True
 
-    def _order_tuple(self) -> tuple:
+    def _order_tuple(self) -> Tuple[float, float, float, Tuple[float, ...]]:
         return (
             self.major,
             -1 if self.minor is None else self.minor,
             -1 if self.micro is None else self.micro,
-            (math.inf,) if self.dev is None else tuple(ord(c) for c in self.dev),
+            tuple([math.inf] if self.dev is None else map(ord, self.dev)),
         )
 
-    def __eq__(self, other: object) -> bool:
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, str):
             other = self.__class__(other)
         if not isinstance(other, self.__class__):
-            return NotImplemented
-        return (self.major, self.minor, self.micro, self.dev) == (
-            other.major,
-            other.minor,
-            other.micro,
-            other.dev,
-        )
+            return False
+        return self._order_tuple() == other._order_tuple()
 
-    def __neq__(self, other: object) -> bool:
-        return not self == other
+    def __ne__(self, other: Any) -> bool:
+        return not (self == other)
 
-    def __lt__(self, other: object) -> bool:
+    def __lt__(self, other: Any) -> bool:
         if isinstance(other, str):
             other = self.__class__(other)
         if not isinstance(other, self.__class__):
             return NotImplemented
         return self._order_tuple() < other._order_tuple()
 
+    def __gt__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            other = self.__class__(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._order_tuple() > other._order_tuple()
+
+    def __le__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            other = self.__class__(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._order_tuple() <= other._order_tuple()
+
+    def __ge__(self, other: Any) -> bool:
+        if isinstance(other, str):
+            other = self.__class__(other)
+        if not isinstance(other, self.__class__):
+            return NotImplemented
+        return self._order_tuple() >= other._order_tuple()
+
     def __repr__(self) -> str:
-        return f"Version(major={self.major}, minor={self.minor}, micro={self.micro}, dev={self.dev})"
+        return f"Version({str(self)!r})"
 
 
 def find_version(
