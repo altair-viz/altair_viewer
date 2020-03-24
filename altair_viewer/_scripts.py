@@ -10,7 +10,9 @@ from altair_viewer._utils import find_version
 def _script_listing() -> Dict[str, List[str]]:
     content = pkgutil.get_data("altair_viewer", "scripts/listing.json")
     if content is None:
-        raise ValueError("Unable to locate altair_viewer/scripts/listing.json")
+        raise RuntimeError(
+            "Internal: unable to locate altair_viewer/scripts/listing.json"
+        )
     return json.loads(content)
 
 
@@ -36,9 +38,8 @@ def get_bundled_script(package: str, version: Optional[str] = None) -> str:
             f"package {package!r} not recognized. Available: {list(listing)}"
         )
     version_str = find_version(version, listing[package])
-    content = pkgutil.get_data("altair_viewer", f"scripts/{package}-{version_str}.js")
+    path = f"scripts/{package}-{version_str}.js"
+    content = pkgutil.get_data("altair_viewer", path)
     if content is None:
-        raise ValueError(
-            f"Cannot locate file altair_viewer/scripts/{package}-{version_str}.js"
-        )
+        raise RuntimeError(f"Internal: cannot locate file altair_viewer/{path}")
     return content.decode()

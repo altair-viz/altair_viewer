@@ -29,7 +29,7 @@ OPERATORS: Dict[str, Callable[[Any, Any], bool]] = {
         ("4.2.0-dev.0", Version(4, 2, 0, "-dev.0")),
     ],
 )
-def test_version_parsing(version_string: str, expected: Version):
+def test_version_parsing(version_string: str, expected: Version) -> None:
     version = Version(version_string)
     assert version == expected
     assert str(version) == version_string
@@ -102,30 +102,30 @@ def test_version_instantitation_errors(
         ("2.0 != 2.0", False),
     ],
 )
-def test_version_comp(expr: str, result: bool):
+def test_version_comp(expr: str, result: bool) -> None:
     lhs, op, rhs = expr.split()
     assert OPERATORS[op](Version(lhs), rhs) is result
     assert OPERATORS[op](lhs, Version(rhs)) is result
 
 
-def test_version_inequality():
+def test_version_inequality() -> None:
     assert Version("3.0") != 0
 
 
 @pytest.mark.parametrize("op", ["<", ">", "<=", ">="])
-def test_version_comp_err(op):
+def test_version_comp_err(op: str) -> None:
     with pytest.raises(TypeError) as err:
         OPERATORS[op](Version("1.0"), None)
     assert str(err.value).startswith(f"{op!r} not supported between instances")
 
 
 @pytest.mark.parametrize("version", ["3", "3.1", "3.2", "3.2.0", "3.2.0.dev0"])
-def test_version_repr(version: str):
+def test_version_repr(version: str) -> None:
     v = Version(version)
     assert eval(repr(v)) == v
 
 
 @pytest.mark.parametrize("version", ["3", "3.1", "3.2", "3.2.0", "3.2.0.dev0"])
-def test_version_str(version: str):
+def test_version_str(version: str) -> None:
     v = Version(version)
     assert str(v) == version

@@ -1,11 +1,13 @@
-from altair_data_server._provide import Provider
 from collections import defaultdict
 import threading
 import time
+from typing import Any, MutableMapping, Set, TypeVar
+
 import tornado.gen
 import tornado.web
 import tornado.websocket
-from typing import MutableMapping, TypeVar
+
+from altair_data_server._provide import Provider
 
 
 class DataSource:
@@ -30,18 +32,20 @@ class DataSource:
 class ConnectionMonitor(tornado.websocket.WebSocketHandler):
     """Web socket connection to monitor connections."""
 
-    _connections: set
+    _connections: Set["ConnectionMonitor"]
     _disconnect_event: threading.Event
 
-    def initialize(self, connections: set, disconnect_event: threading.Event) -> None:
+    def initialize(
+        self, connections: Set["ConnectionMonitor"], disconnect_event: threading.Event
+    ) -> None:
         self._connections = connections
         self._disconnect_event = disconnect_event
 
-    def open(self):
+    def open(self, *args: str, **kwargs: str) -> None:
         self._connections.add(self)
         self._disconnect_event.clear()
 
-    def on_close(self):
+    def on_close(self) -> None:
         self._connections.remove(self)
         if not self._connections:
             self._disconnect_event.set()
@@ -94,7 +98,7 @@ class EventProvider(Provider):
     _stream_path: str
     _websocket_path: str
     _stop_event: threading.Event
-    _connections: set
+    _connections: Set[ConnectionMonitor]
     _disconnect_event: threading.Event
 
     def __init__(self, stream_path: str = "stream", websocket_path: str = "websocket"):
@@ -111,7 +115,7 @@ class EventProvider(Provider):
         time.sleep(0.05)  # Allow loop in thread to complete.
         return super().stop()
 
-    def _handlers(self) -> list:
+    def _handlers(self) -> Any:
         handlers = super()._handlers()
         return [
             (
