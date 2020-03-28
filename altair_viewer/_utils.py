@@ -166,7 +166,7 @@ def find_version(
     Parameters
     ----------
     version : str or None
-        The version to match. If None, the newest version will be used.
+        The version to match. If None, the newest non-development version will be used.
     candidates : list
         The list of candidate versions to consider.
     strict_micro : bool
@@ -210,6 +210,8 @@ def find_version(
     matches = [c for c in cand if v.matches(c)]
     if not matches:
         raise NoMatchingVersions(
-            f"No matches for version={version!r} among {candidates}"
+            f"No matches for version={version!r} among {candidates}.\n"
+            "Often this can be fixed by updating altair_viewer:\n"
+            "    pip install -U altair_viewer"
         )
     return str(matches[-1])
