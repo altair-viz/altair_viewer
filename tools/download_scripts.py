@@ -4,8 +4,8 @@ from urllib.request import urlretrieve
 
 PACKAGES = {
     "vega": ["5.9.2", "5.10.0"],
-    "vega-lite": ["4.0.2", "4.7.0"],
-    "vega-embed": ["6.2.2"],
+    "vega-lite": ["4.0.2", "4.8.1"],
+    "vega-embed": ["6.2.2", "6.5.2"],
 }
 
 OUTDIR = os.path.join(os.path.dirname(__file__), "..", "altair_viewer", "scripts")
