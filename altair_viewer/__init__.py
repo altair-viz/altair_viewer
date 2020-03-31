@@ -1,6 +1,6 @@
 """Altair viewer provides offline viewing for Altair charts."""
 
-__version__ = "0.3.0.dev2"
+__version__ = "0.3.0"
 __all__ = [
     "ChartViewer",
     "NoMatchingVersions",
