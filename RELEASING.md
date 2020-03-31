@@ -32,3 +32,5 @@
        git add . -u
        git commit -m "MAINT: bump version to 1.1.0.dev0"
        git push origin master
+
+10. Update releases on github with new changelog entry.
