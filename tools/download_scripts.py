@@ -3,7 +3,7 @@ import os
 from urllib.request import urlretrieve
 
 PACKAGES = {
-    "vega": ["5.9.2", "5.10.0"],
+    "vega": ["5.9.2", "5.10.1"],
     "vega-lite": ["4.0.2", "4.8.1"],
     "vega-embed": ["6.2.2", "6.5.2"],
 }
