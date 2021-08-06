@@ -19,12 +19,14 @@ HTML = """
     <script src="{vegalite_url}"></script>
     <script src="{vegaembed_url}"></script>
     <style>
-    div.altair-chart {{
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-    }}
+        body {{
+            cursor: default;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: min-content;
+            min-height: min-content;
+        }}
     </style>
   </head>
   <body>
