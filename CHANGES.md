@@ -1,5 +1,7 @@
 # Altair Viewer Change Log
 
+## Version 0.5.0 (unreleased)
+
 ## Version 0.4.0
 
 - add bundled Vega v5.21.0
