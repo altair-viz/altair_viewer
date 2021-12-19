@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8' ]
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
     name: Python ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v1
@@ -21,5 +21,5 @@ jobs:
         pip install .
     - name: Test with pytest
       run: |
-        pip install pytest IPython "jsonschema<4.0"
+        pip install pytest IPython
         pytest --doctest-modules altair_viewer
