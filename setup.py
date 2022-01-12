@@ -69,7 +69,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=get_install_requirements("requirements.txt"),
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     entry_points={
         "altair.vegalite.v4.renderer": ["altair_viewer=altair_viewer:render"],
     },
@@ -79,9 +79,9 @@ setup(
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: BSD License",
         "Natural Language :: English",
+        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
     ],
 )
