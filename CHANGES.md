@@ -2,8 +2,8 @@
 
 ## Version 0.5.0 (unreleased)
 
-- add bundled Vega-Lite v5.2.0
-- update bundled Vega-Embed to v6.20.5
+- add bundled Vega-Lite v5.5.0
+- update bundled Vega-Embed to v6.21.0
 
 ## Version 0.4.0
 
