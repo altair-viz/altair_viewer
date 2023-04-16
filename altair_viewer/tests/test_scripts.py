@@ -10,7 +10,8 @@ def test_get_bundled_script(package: str) -> None:
 
 
 @pytest.mark.parametrize(
-    "package,version", [("vega", "5"), ("vega-lite", "4"), ("vega-lite", "5"), ("vega-embed", "6")]
+    "package,version",
+    [("vega", "5"), ("vega-lite", "4"), ("vega-lite", "5"), ("vega-embed", "6")],
 )
 def test_get_bundled_script_with_version(package: str, version: str) -> None:
     script = get_bundled_script(package)
