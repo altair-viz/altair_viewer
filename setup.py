@@ -72,6 +72,7 @@ setup(
     python_requires=">=3.7",
     entry_points={
         "altair.vegalite.v4.renderer": ["altair_viewer=altair_viewer:render"],
+        "altair.vegalite.v5.renderer": ["altair_viewer=altair_viewer:render"],
     },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
