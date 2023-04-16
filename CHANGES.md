@@ -50,4 +50,4 @@ Basic functionality:
 Entrypoints:
 
 - ``altair.vegalite.v4.renderer``
-- ``altair.vegalite.v4.renderer``
+- ``altair.vegalite.v5.renderer``
