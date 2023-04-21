@@ -3,8 +3,8 @@
 ## Version 0.5.0 (unreleased)
 
 - add bundled Vega v5.24.0
-- add bundled Vega-Lite v5.7.0
-- add bundled Vega-Embed v6.21.3
+- add bundled Vega-Lite v5.7.1
+- add bundled Vega-Embed v6.22.0
 - add entrypoint ``altair.vegalite.v5.renderer``
 
 ## Version 0.4.0
