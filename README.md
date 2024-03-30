@@ -1,4 +1,13 @@
 # Altair Viewer
+
+**This repo is no longer maintained.**
+Since Altair 5.3,
+the functionality of Altair Viewer is now available in Altair via the [vl-convert](https://github.com/vega/vl-convert) package.
+See [the docs on how to use the browser renderer](https://altair-viz.github.io/user_guide/display_frontends.html#browser-renderer) to display charts via `.show()`,
+and the PR https://github.com/altair-viz/altair/pull/3379 for more details.
+
+---
+
 Offline chart viewer for [Altair](http://altair-viz.github.io) visualizations
 
 [![github actions](https://github.com/altair-viz/altair_viewer/workflows/build/badge.svg)](https://github.com/altair-viz/altair_viewer/actions?query=workflow%3Abuild)
